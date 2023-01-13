@@ -24,7 +24,7 @@ class Transaction(TimestampedModel):
                              on_delete=models.CASCADE)
     books = models.ManyToManyField(Book,
                                    related_name="transactions")
-    start_date = models.DateTimeField(editable=True)
-    due_date = models.DateTimeField(editable=True)
-    return_date = models.DateTimeField(editable=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    due_date = models.DateTimeField(blank=True, null=True)
+    return_date = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
