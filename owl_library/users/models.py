@@ -11,14 +11,19 @@ class CustomUser(AbstractUser):
                             blank=True,
                             max_length=200)
 
+
 class Transaction(TimestampedModel):
-    TRANSACTION_TYPES = (("BORROW", "Borrow"), ("RENEW", "Renew"))
+    # TRANSACTION_TYPES = (("BORROW", "Borrow"), ("RENEW", "Renew"))
+    STATUSES = (("BORROWED", "Borrowed"), ("RENEWED", "Renewed"),
+                            ("RETURNED", "Returned"), ("ABSCONDED", "Absconded"),
+        )
+
     notes = models.CharField(null=True,
                             blank=True,
                             max_length=200)
-    transaction_type = models.CharField(max_length=10,
-                                choices=TRANSACTION_TYPES,
-                                default="BORROW")
+    transaction_status = models.CharField(max_length=10,
+                                choices=STATUSES,
+                                default="BORROWED")
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              related_name="transactions",
                              on_delete=models.CASCADE)
