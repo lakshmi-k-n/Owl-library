@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from books.models import Book
 from utilities.models import TimestampedModel
 from django.conf import settings
+# from datetime import datetime
+from django.utils import timezone
 # Create your models here.
 
 
@@ -17,6 +19,7 @@ class Transaction(TimestampedModel):
     STATUSES = (("BORROWED", "Borrowed"), ("RENEWED", "Renewed"),
                             ("RETURNED", "Returned"), ("ABSCONDED", "Absconded"),
         )
+    holding_period = 14
 
     notes = models.CharField(null=True,
                             blank=True,

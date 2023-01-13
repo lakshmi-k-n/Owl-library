@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
+# from os.path import abspath, basename, dirname, join, normpath
+# from sys import path
 from pathlib import Path
 import environ
 
@@ -19,7 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(DEBUG=(bool, False), )
 environ.Env.read_env()  # reading .env file
 # END DJANGO-ENVIRON CONFIGURATION
-
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+# )
 AUTH_USER_MODEL = "users.CustomUser"
 # DEBUG CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
@@ -33,7 +41,8 @@ SECRET_KEY = 'django-insecure-w53%6e8m*o(_ux(8vfrnv!53&h1zv8s@1(w4*n8fzir9meskb1
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0']
+
 
 DJANGO_APPS  = [
     'django.contrib.admin',
@@ -42,7 +51,8 @@ DJANGO_APPS  = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions'
+    'rest_framework_swagger',
+    'django_extensions',
 ]
 PROJECT_APPS = ['books',
                 'users',
@@ -136,8 +146,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+# STATICFILES_DIRS = [
+#      BASE_DIR / "static"
+#  ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# import pdb
+# pdb.set_trace()

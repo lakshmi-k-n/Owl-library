@@ -15,7 +15,32 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import include, url
+from api_v1 import urls as api_v1_urls
+from . import settings
+from rest_framework_swagger.views import get_swagger_view
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+# import pdb
+# pdb.set_trace()
+urlpatterns += [
+    url(r"api/v1/", include(api_v1_urls)),
+]
+schema_view = get_swagger_view(title='OWLIB API')
+
+urlpatterns += [
+    url(r'^$', schema_view)
+]
+
+# if settings.DEBUG:
+
+#     # import debug_toolbar
+#     # urlpatterns += [
+#     #     url(r'^__debug__/', include(debug_toolbar.urls)),
+#     # ]
+
+#     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+#     urlpatterns += staticfiles_urlpatterns()
