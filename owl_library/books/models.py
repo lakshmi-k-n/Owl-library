@@ -16,7 +16,7 @@ class Author(TimestampedModel):
                                 choices=AUTHOR_TYPES,
                                 default="NOVELIST")
     # lock period in days
-    lock_period = models.IntegerField(default=180)
+    lock_period = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
 
 
