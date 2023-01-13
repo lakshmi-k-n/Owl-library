@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
 
 class Transaction(TimestampedModel):
     TRANSACTION_TYPES = (("BORROW", "Borrow"), ("RENEW", "Renew"))
-    address = models.CharField(null=True,
+    notes = models.CharField(null=True,
                             blank=True,
                             max_length=200)
     transaction_type = models.CharField(max_length=10,
