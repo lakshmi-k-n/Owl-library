@@ -11,7 +11,7 @@ urlpatterns = []
 router = routers.SimpleRouter()
 router.register(r'books',
                 BooksViewSet, 'books')
-router.register(r'users/(?P<user_id>.+)/transactions',
+router.register(r'users/transactions',
                 TransactionsViewSet, 'user_transactions')
 urlpatterns += url("^books/next-available/$",
                    view=CheckBookAvailabilityAPI.as_view(),

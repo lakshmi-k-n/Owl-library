@@ -1,6 +1,7 @@
 from users.models import CustomUser, Transaction
 from books.models import Book
 from datetime import datetime, timedelta
+from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -21,7 +22,7 @@ def get_next_available_date(book_id, email=None):
                                                 books__id=book_id
                                                 ).first()
     if not transaction:
-        return None
+        return timezone.now()
     next_available_date = transaction.due_date + timedelta(days=1)
     user = CustomUser.objects.filter(email=email).first()
     if user:

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from books.models import Book,Author
 from users.models import CustomUser,Transaction
+from utilities.utils import get_next_available_date
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -12,7 +13,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    """Serializer for Book
+    """Serializer for Transaction
     """
     class Meta:
         model = Transaction

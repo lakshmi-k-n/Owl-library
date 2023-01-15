@@ -10,6 +10,7 @@ from users.models import CustomUser, Transaction
 from .serializers import BookSerializer, TransactionSerializer
 from utilities.utils import (transaction_status_is_valid,
                                 get_next_available_date)
+from django.utils import timezone
 # from utilities.authentication import EmailAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,7 +26,6 @@ class BooksViewSet(mixins.ListModelMixin,
     View to list books
     '''
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CamelCaseJSONRenderer,)
     authentication_classes = (BasicAuthentication,)
     serializer_class = BookSerializer
     lookup_field = ('id')
@@ -49,7 +49,7 @@ class CheckBookAvailabilityAPI(APIView):
     def get(self, request, *args, **kwargs):
         email = request.query_params.get('email',None)
         # bookId is required
-        book_id = request.query_params.get('bookId',None)
+        book_id = request.query_params.get('book_id',None)
         if not book_id:
             raise Http404
         next_available = get_next_available_date(book_id, email=email)
@@ -59,7 +59,6 @@ class CheckBookAvailabilityAPI(APIView):
 
 class TransactionsViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CamelCaseJSONRenderer,)
     authentication_classes = (BasicAuthentication,)
     serializer_class = TransactionSerializer
     lookup_field = ('id')
@@ -69,12 +68,20 @@ class TransactionsViewSet(viewsets.ViewSet):
         # import pdb
         # pdb.set_trace()
         data = request.data
-        serializer = serializer_class(data=data)
+        serializer = self.serializer_class(data=data)
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
+        book_id = data.get('id',None)
+        next_available_date = get_next_available_date(book_id)
+        if next_available_date > timezone.now():
+            return Response(
+            {"message":"Book not available for borrowing!"},
+            status=status.HTTP_200_OK
+        )
+        serializer.save()
         return Response(
             {"message":"success"},
             status=status.HTTP_200_OK

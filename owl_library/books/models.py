@@ -19,6 +19,11 @@ class Author(TimestampedModel):
     lock_period = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+         if self.name.startswith(('j','J')):
+             self.lock_period = 180
+         super().save(*args, **kwargs)
+
 
 class Book(TimestampedModel):
     BOOK_TYPES = (("PAPERBACK", "Paperback"), 
@@ -29,7 +34,7 @@ class Book(TimestampedModel):
                                 choices=BOOK_TYPES,
                                 default="PAPERBACK")
     publisher = models.CharField(max_length=150)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+    author = models.ForeignKey(Author,
                              related_name="books",
                              on_delete=models.CASCADE)
     no_of_copies = models.IntegerField(default=0)
