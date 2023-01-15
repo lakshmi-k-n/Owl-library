@@ -95,7 +95,7 @@ class TransactionsViewSet(viewsets.ViewSet):
         try:
             transaction = Transaction.objects.get(id=transaction_id,
                                                     user=user_id)
-        except ObjectDoesNotExist:
+        except Transaction.ObjectDoesNotExist:
             raise Http404
         transaction.status = upper(transaction_status)
         transaction.return_date = timezone.now()
