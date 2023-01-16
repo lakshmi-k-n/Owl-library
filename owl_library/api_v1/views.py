@@ -54,6 +54,11 @@ class CheckBookAvailabilityAPI(APIView):
         if not book_id:
             raise Http404
         next_available = get_next_available_date(book_id, email=email)
+        if not next_available:
+            return Response(
+                {"errors": "Invalid book id or email"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         return Response({"next_available": next_available}, 
                                     status=status.HTTP_200_OK)
 
@@ -74,8 +79,10 @@ class TransactionsViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         book = serializer.validated_data.pop('book')
-        next_available_date = get_next_available_date(book.id)
-        if next_available_date > timezone.now():
+        next_available_date = get_next_available_date(book.id,
+                                                    email=user.email
+                                                    )
+        if next_available_date > timezone.now().date():
             return Response(
             {"message":"Book not available for borrowing!"},
             status=status.HTTP_200_OK
