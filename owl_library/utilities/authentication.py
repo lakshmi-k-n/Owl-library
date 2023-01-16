@@ -5,8 +5,6 @@ from rest_framework import exceptions
 class EmailAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
         email = request.META.get('X-Email') # get the username request header
-        import pdb
-        pdb.set_trace()
         if not email: # no username passed in request headers
             return None # authentication did not succeed
 

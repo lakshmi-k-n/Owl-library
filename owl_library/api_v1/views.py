@@ -11,6 +11,7 @@ from .serializers import BookSerializer, TransactionSerializer
 from utilities.utils import (transaction_status_is_valid,
                                 get_next_available_date)
 from django.utils import timezone
+from datetime import timedelta
 # from utilities.authentication import EmailAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -32,7 +33,7 @@ class BooksViewSet(mixins.ListModelMixin,
 
     def get_queryset(self):
         author_id = self.request.query_params.get('author', None)
-        author_name = self.request.query_params.get('authorName', None)
+        author_name = self.request.query_params.get('author_name', None)
         books = Book.objects.all().order_by("-id")
         # if both id and name is obtained,id is used
         if author_id:
@@ -64,9 +65,7 @@ class TransactionsViewSet(viewsets.ViewSet):
     lookup_field = ('id')
 
     def create(self, request, **kwargs):
-        user_id = kwargs.get('user_id')
-        # import pdb
-        # pdb.set_trace()
+        user = request.user
         data = request.data
         serializer = self.serializer_class(data=data)
         if not serializer.is_valid():
@@ -74,37 +73,40 @@ class TransactionsViewSet(viewsets.ViewSet):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
-        book_id = data.get('id',None)
-        next_available_date = get_next_available_date(book_id)
+        book = serializer.validated_data.pop('book')
+        next_available_date = get_next_available_date(book.id)
         if next_available_date > timezone.now():
             return Response(
             {"message":"Book not available for borrowing!"},
             status=status.HTTP_200_OK
         )
-        serializer.save()
+        instance = serializer.save(user=user)
+        instance.start_date = timezone.now()
+        instance.due_date = timezone.now() + timedelta(
+                                        days=Transaction.holding_period)
+        instance.transaction_status = "BORROWED"
+        instance.save()
+        instance.books.add(book)
         return Response(
             {"message":"success"},
             status=status.HTTP_200_OK
         )
 
     def partial_update(self, request, **kwargs):
-        user_id = kwargs.get('user_id',None)
+        user = request.user
         transaction_id = kwargs.get('id',None)
+        # if not transaction_id:
+        #     raise Http404
         transaction_status = request.data.get('status',None)
-        # user_email = request.data.get('user_id',None)
-        # import pdb
-        # pdb.set_trace()
         if not transaction_status_is_valid(transaction_status):
             return Response({"error": "invalid data"},
                              status=status.HTTP_400_BAD_REQUEST)
-        if not user_id and not transaction_id:
-            raise Http404
         try:
             transaction = Transaction.objects.get(id=transaction_id,
-                                                    user=user_id)
-        except Transaction.ObjectDoesNotExist:
+                                                    user=user)
+        except ObjectDoesNotExist:
             raise Http404
-        transaction.status = upper(transaction_status)
+        transaction.status = transaction_status.upper()
         transaction.return_date = timezone.now()
         transaction.is_active = False
         transaction.save()
@@ -115,11 +117,9 @@ class TransactionsViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def active(self, request, **kwargs):
-        user_id = kwargs.get('user_id',None)
-        if not user_id:
-            raise Http404
-        active_transactions = Transaction.objects.filter(user=user_id,
-                                                    is_active=True
+        user = request.user
+        active_transactions = Transaction.objects.filter(user=user,
+                                                    # is_active=True
                                                     ).order_by('-id')
 
         serializer = self.serializer_class(active_transactions, many=True)
