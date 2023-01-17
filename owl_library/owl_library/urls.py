@@ -47,8 +47,6 @@ urlpatterns += [
 urlpatterns += [
     path('admin/', admin.site.urls),
 ]
-# import pdb
-# pdb.set_trace()
 urlpatterns += [
     url(r"api/v1/", include(api_v1_urls)),
 ]
@@ -57,13 +55,3 @@ schema_view = get_swagger_view(title='OWLIB API')
 urlpatterns += [
     url(r'swagger', schema_view)
 ]
-
-# if settings.DEBUG:
-
-#     # import debug_toolbar
-#     # urlpatterns += [
-#     #     url(r'^__debug__/', include(debug_toolbar.urls)),
-#     # ]
-
-#     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-#     urlpatterns += staticfiles_urlpatterns()
