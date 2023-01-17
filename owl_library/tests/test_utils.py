@@ -3,16 +3,55 @@ from model_bakery import baker
 from django.utils import timezone
 from datetime import datetime, timedelta
 from utilities.utils import (transaction_status_is_valid,
-                                get_next_available_date)
+                                get_next_available_date,
+                                get_date_after_lock_period,
+                                calculate_next_date)
 from users.models import CustomUser, Transaction
 from books.models import Book
 
 
+
+@pytest.mark.django_db
+class TestDateCalculationHelpers(object):
+
+    def test_calculate_next_date(self):
+        '''
+        Input: datetime object
+        Ouput: datetime object
+        If a past date is given as input, current 
+        date is returned.
+        If a future date is given as input, future
+        date is returned.
+        '''
+        test_function = calculate_next_date
+        past_date = timezone.now() - datetime(days=10)
+        future_date = timezone.now() + datetime(days=10)
+        assert test_function(future_date) == future_date
+        assert test_function(past_date) == timezone.now().date()
+
+    def test_calculate_next_date(self):
+        author_1 = baker.make('Author',
+                               name="Jack Ripper")
+        book_1 = baker.make('Book',
+                             title="book_1",
+                             author=author_1,
+                             )
+        author_2 = baker.make('Author',
+                               name="Uzumaki N")
+        book_2 = baker.make('Book',
+                             title="book_2",
+                             author=author_2,
+                             )
+        test_function = get_date_after_lock_period
+        now = timezone.now()
+        assert test_function(now, book_1).date() ==\
+                             (now + timedelta(days=180)).date()
+        assert test_function(now, book_2).date() ==\
+                             (now + timedelta(days=90)).date()
+
+
 @pytest.mark.django_db
 class TestTransactionStatus(object):
-        ''' 
-        Testing function : transaction_status_is_valid
-        '''
 
     @pytest.mark.parametrize("test_input,expected", [
         ("stop", False),
@@ -25,6 +64,7 @@ class TestTransactionStatus(object):
         ("HASJHK", False)
     ])
     def test_transaction_status_is_valid(self, test_input, expected):
+
         test_function = transaction_status_is_valid
         assert test_function(test_input) == expected
 
