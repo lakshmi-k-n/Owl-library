@@ -4,6 +4,7 @@ A simple CRUD application to manage a public library system
 ## Requirements
 - Python 3.6
 - PostgreSQL 9.6 or higher
+- Django Rest Framework
 
 ## Installation  
 `python -m venv env`
@@ -33,5 +34,7 @@ Install all the required dependencies
 ## API Documentation
 ### Structure
 Endpoints are organized around resources namely - _books_ ,_users_ and _transactions_.  
+### Authentication
+For authentication Basic Authenticaion is used. For endpoints that require authentication, please create a valid user with password via django admin. For examples please refer the API documentation.  
 #### Find the detailed API documentation here:  
 https://documenter.getpostman.com/view/16437514/2s8ZDVYNtP
