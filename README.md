@@ -29,6 +29,10 @@ Install all the required dependencies
 
  Run migrations and start server  
  `python manage.py runserver 0.0.0.0:8002`
- 
-### API Documentation
-https://documenter.getpostman.com/view/16437514/2s8ZDVYNtP#1f4a0013-d8cf-45cc-b3fe-531160260419
+
+## API Documentation
+### Structure
+Endpoints are organized around resources namely - _books_ ,_users_ and _transactions_.  
+Find the detailed API documentation here:  
+https://documenter.getpostman.com/view/16437514/2s8ZDVYNtP#96c7dd08-d1c4-4955-89d3-412d5e281638
+
