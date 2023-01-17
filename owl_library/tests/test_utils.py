@@ -10,7 +10,6 @@ from users.models import CustomUser, Transaction
 from books.models import Book
 
 
-
 @pytest.mark.django_db
 class TestDateCalculationHelpers(object):
 
@@ -63,7 +62,9 @@ class TestTransactionStatus(object):
         ("returned", True),
         ("HASJHK", False)
     ])
-    def test_transaction_status_is_valid(self, test_input, expected):
+    def test_transaction_status_is_valid(self, test_input,
+                                             expected
+                                             ):
 
         test_function = transaction_status_is_valid
         assert test_function(test_input) == expected
@@ -172,23 +173,45 @@ class TestNextAvailableDate(object):
         # 1
         assert None == get_next_available_date(111)
         # 2
-        assert timezone.now().date() == get_next_available_date(book_1.id).date()
+        assert timezone.now().date() == get_next_available_date(book_1.id).\
+                                                                    date()
         # 3
-        assert None == get_next_available_date(book_1.id, "Dashales309@1wa8o.media")
+        assert None == get_next_available_date(book_1.id,
+                                             "Dashales309@1wa8o.media"
+                                                 )
         # 4
-        assert (transaction_1.start_date + timedelta(days=180)).date() == get_next_available_date(book_1.id, "Enoch_Gilmore2863@evyvh.solutions").date()
+        assert (transaction_1.start_date + timedelta(days=180)).date() ==\
+                                     get_next_available_date(book_1.id,
+                                    "Enoch_Gilmore2863@evyvh.solutions"
+                                                                ).date()
         # 5
-        assert (transaction_2.start_date + timedelta(days=90)).date() == get_next_available_date(book_2.id, "Dasha_Gonzales309@1wa8o.media").date()
+        assert (transaction_2.start_date + timedelta(days=90)).date() ==\
+                                     get_next_available_date(book_2.id, 
+                                        "Dasha_Gonzales309@1wa8o.media"
+                                                                ).date()
         # 6
-        assert (transaction_3.start_date + timedelta(days=180)).date() == get_next_available_date(book_1.id, "Phoebe_Hamilton3144@jh02o.name").date()
+        assert (transaction_3.start_date + timedelta(days=180)).date() ==\
+                                     get_next_available_date(book_1.id,
+                                        "Phoebe_Hamilton3144@jh02o.name"
+                                                                ).date()
         # 7
-        assert (transaction_4.start_date + timedelta(days=180)).date() == get_next_available_date(book_3.id, "Stacy_Hamilton3144@jh02o.name").date()
+        assert (transaction_4.start_date + timedelta(days=180)).date() ==\
+                                     get_next_available_date(book_3.id,
+                                      "Stacy_Hamilton3144@jh02o.name"
+                                                                ).date()
         # 8
-        assert (transaction_5.start_date + timedelta(days=90)).date() == get_next_available_date(book_4.id, "Harry_Hamilton3144@jh02o.name").date()
+        assert (transaction_5.start_date + timedelta(days=90)).date() ==\
+                                     get_next_available_date(book_4.id,
+                                      "Harry_Hamilton3144@jh02o.name"
+                                                                  ).date()
         # 9
-        assert timezone.now().date() == get_next_available_date(book_3.id, "Harry_Hamilton3144@jh02o.name").date()
+        assert timezone.now().date() == get_next_available_date(book_3.id,
+                                     "Harry_Hamilton3144@jh02o.name"
+                                                                ).date()
         # 10
-        assert timezone.now().date() == get_next_available_date(book_5.id, "Enoch_Gilmore2863@evyvh.solutions").date()
+        assert timezone.now().date() == get_next_available_date(book_5.id,
+                                     "Enoch_Gilmore2863@evyvh.solutions"
+                                                                 ).date()
 
 
 

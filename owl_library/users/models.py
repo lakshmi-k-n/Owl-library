@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from books.models import Book
 from utilities.models import TimestampedModel
 from django.conf import settings
-# from datetime import datetime
 from django.utils import timezone
 # Create your models here.
 
@@ -15,9 +14,8 @@ class CustomUser(AbstractUser):
 
 
 class Transaction(TimestampedModel):
-    # TRANSACTION_TYPES = (("BORROW", "Borrow"), ("RENEW", "Renew"))
     STATUSES = (("BORROWED", "Borrowed"), ("RENEWED", "Renewed"),
-                            ("RETURNED", "Returned"), ("ABSCONDED", "Absconded"),
+                ("RETURNED", "Returned"), ("ABSCONDED", "Absconded"),
         )
     holding_period = 14
 

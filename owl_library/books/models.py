@@ -20,6 +20,7 @@ class Author(TimestampedModel):
     is_active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
+        # Logic for saving lock period
          if self.name.startswith(('j','J')):
              self.lock_period = 180
          super().save(*args, **kwargs)

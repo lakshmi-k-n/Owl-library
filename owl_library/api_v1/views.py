@@ -1,9 +1,6 @@
-# from django.shortcuts import render
-# from rest_framework.views import APIView
 from rest_framework import viewsets, status, mixins
 from rest_framework.decorators import action
-from djangorestframework_camel_case.render import CamelCaseJSONRenderer
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from books.models import Book, Author
 from users.models import CustomUser, Transaction
@@ -12,7 +9,6 @@ from utilities.utils import (transaction_status_is_valid,
                                 get_next_available_date)
 from django.utils import timezone
 from datetime import timedelta
-# from utilities.authentication import EmailAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.exceptions import ObjectDoesNotExist
@@ -24,10 +20,9 @@ from django.http.response import Http404
 class BooksViewSet(mixins.ListModelMixin,
                                  viewsets.GenericViewSet):
     '''
-    View to list books
+    View to list books and filter by author and
+    author name
     '''
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (BasicAuthentication,)
     serializer_class = BookSerializer
     lookup_field = ('id')
 
@@ -46,10 +41,11 @@ class BooksViewSet(mixins.ListModelMixin,
 
 class CheckBookAvailabilityAPI(APIView):
     """
+    Check availability of a book
     """
     def get(self, request, *args, **kwargs):
         email = request.query_params.get('email',None)
-        # bookId is required
+        # book_id is required
         book_id = request.query_params.get('book_id',None)
         if not book_id:
             raise Http404
@@ -70,6 +66,10 @@ class TransactionsViewSet(viewsets.ViewSet):
     lookup_field = ('id')
 
     def create(self, request, **kwargs):
+        '''
+        Create a new transaction. Use this method to
+        borrow a book.
+        '''
         user = request.user
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -89,8 +89,8 @@ class TransactionsViewSet(viewsets.ViewSet):
         )
         instance = serializer.save(user=user)
         instance.start_date = timezone.now()
-        instance.due_date = timezone.now() + timedelta(
-                                        days=Transaction.holding_period)
+        instance.due_date = timezone.now() + \
+                                timedelta(days=Transaction.holding_period)
         instance.transaction_status = "BORROWED"
         instance.save()
         instance.books.add(book)
@@ -100,10 +100,12 @@ class TransactionsViewSet(viewsets.ViewSet):
         )
 
     def partial_update(self, request, **kwargs):
+        '''
+        Update status of a transaction 
+        Use it to return books
+        '''
         user = request.user
         transaction_id = kwargs.get('id',None)
-        # if not transaction_id:
-        #     raise Http404
         transaction_status = request.data.get('status',None)
         if not transaction_status_is_valid(transaction_status):
             return Response({"error": "invalid data"},
@@ -124,9 +126,12 @@ class TransactionsViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['get'])
     def active(self, request, **kwargs):
+        '''
+        List all active transactions of user
+        '''
         user = request.user
         active_transactions = Transaction.objects.filter(user=user,
-                                                    # is_active=True
+                                                    is_active=True
                                                     ).order_by('-id')
 
         serializer = self.serializer_class(active_transactions, many=True)

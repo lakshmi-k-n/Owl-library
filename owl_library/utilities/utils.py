@@ -44,9 +44,11 @@ def get_next_available_date(book_id, email=None):
     # active transaction can exist for a book at a time). 
     active_transaction = transactions.filter(
                                         is_active=True
-                                            ).last()
+                                        ).last()
     # Past/inactive transactions for the book
-    inactive_transactions = transactions.filter(is_active=False)
+    inactive_transactions = transactions.filter(
+                                        is_active=False
+                                        )
     # If there is an active transaction for the book
     if active_transaction:
         if active_transaction.user == user:
