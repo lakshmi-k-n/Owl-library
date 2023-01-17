@@ -34,5 +34,4 @@ Install all the required dependencies
 ### Structure
 Endpoints are organized around resources namely - _books_ ,_users_ and _transactions_.  
 #### Find the detailed API documentation here:  
-https://documenter.getpostman.com/view/16437514/2s8ZDVYNtP#96c7dd08-d1c4-4955-89d3-412d5e281638
-
+https://documenter.getpostman.com/view/16437514/2s8ZDVYNtP
